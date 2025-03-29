@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full height of the window */
+            display: flex;
+            flex-direction: column;
+            background-color: #333; /* Dark background for the entire page */
+        }
+        #chat-container {
+            height: calc(100vh - 70px); /* Full height minus the input area height */
+            width: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: transparent; /* Transparent background */
+            color: white; /* White text color */
+            flex-grow: 1; /* Allow chat container to take up most of the space */
+            box-sizing: border-box; /* Include padding in the height calculation */
+        }
+        #input-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #444; /* Darker background for the input container */
+            border-top: 1px solid #ccc;
+            height: 70px; /* Fixed input height */
+            box-sizing: border-box; /* Include padding inside the height */
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for input */
+        }
+        #message {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 16px;
+            height: 100%;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background-color: #f1f1f1; /* Light grey background for the input */
+            outline: none;
+            transition: border 0.3s;
+        }
+        #message:focus {
+            border: 1px solid #4CAF50; /* Green border when focused */
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 20px;
+            margin-left: 10px;
+            height: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h1 {
+            padding: 15px;
+            margin: 0;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with tGenieAI</h1>
+    <div id="chat-container"></div>
+    <div id="input-container">
+        <input type="text" id="message" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        function sendMessage() {
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value.trim();
+            if (message) {
+                addMessage("You: " + message);
+                vscode.postMessage({ command: 'sendMessage', text: message });
+                messageInput.value = '';
+            }
+        }
+
+        function addMessage(text) {
+            const chatContainer = document.getElementById("chat-container");
+            const messageElement = document.createElement("div");
+            messageElement.textContent = text;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        window.addEventListener("message", event => {
+            const message = event.data;
+            if (message.command === "addMessage") {
+                addMessage(message.text);
+            }
+        });
+
+        // Event listener for the Enter key
+        document.getElementById("message").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevents the default action (such as a newline in the input field)
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
