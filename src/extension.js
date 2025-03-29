@@ -1,5 +1,5 @@
 const vscode = require("vscode");
-const { MyWebviewProvider } = require('./src/webviewProvider'); // Import the class
+const { MyWebviewProvider } = require('./webviewProvider'); // Import the class
 
 
 function activate(context) {
